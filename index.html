@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Points on the map with OpenStreetMap</title>
+<script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+</head>
+<body>
+<h2>Points on the map with <a href="https://www.openstreetmap.org/" target="_blank">'OpenStreetMap'</a> API</h2>
+<i>Easy sample for improvements</i>
+<br>
+<h3>markerGet (hover the cursor over a point)</h3>
+<div id="markerGet" style="width:800px; height:500px;"></div>
+<br>
+<h3>markerAdd (click on the map)</h3>
+<div id="markerAdd" style="width:800px; height:500px;"></div>
+
+<script>
+var dataExample = [
+    {lat: 55.920124, lon: 37.998659, data: 'НИИХИММАШ'},
+    {lat: 55.918574, lon: 38.005837, data: '<b>1-й Советский пер.</b><br>дом 28'},
+    {lat: 55.919192, lon: 38.001883, data: 'Хим-Дым ;)'},
+    {lat: 55.921767, lon: 38.018362, data: 'Искупаться на Клязьме'}
+]
+
+var svg = '<path d="m30 5c-9.04 0-16.4 7.35-16.4 16.39 0 15.15 15 32.53 15.64 33.27.19.21.47.34.76.34s.56-.13.75-.34c.64-.74 15.64-18.12 15.64-33.27 0-9.04-7.34-16.39-16.39-16.39zm0 25.24c-4.88 0-8.85-3.97-8.85-8.85 0-4.87 3.97-8.84 8.85-8.84s8.85 3.97 8.85 8.84c.01 4.88-3.97 8.85-8.85 8.85z"/>';
+var punkt = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">${svg}</svg>`;
+var size = new OpenLayers.Size(41, 45);
+var offset = new OpenLayers.Pixel(-(size.w / 2), -size.h);
+
+markerGet()
+function markerGet() {
+    let map = new OpenLayers.Map("markerGet");
+    let mapnik = new OpenLayers.Layer.OSM();
+    map.addLayer(mapnik);
+    let mapFrame = map.setCenter(new OpenLayers.LonLat(dataExample[1].lon, dataExample[1].lat)
+        .transform(
+        new OpenLayers.Projection("EPSG:4326"),
+        new OpenLayers.Projection("EPSG:900913")
+        ), 15
+    );
+
+    let layerMarkers = new OpenLayers.Layer.Markers("Markers");
+    map.addLayer(layerMarkers);
+
+    dataExample.forEach((element) => {
+        layerMarkers.addMarker(metka =new OpenLayers.Marker(new OpenLayers.LonLat(element.lon, element.lat)
+        .transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            new OpenLayers.Projection("EPSG:900913")
+        ), new OpenLayers.Icon(punkt, size, offset)));
+        metka.data = element.data
+    });
+
+    layerMarkers.markers.forEach((value)=>{
+        value.events.register('mouseover', value, function(evt) {
+            popup = new OpenLayers.Popup("popup",
+            evt.object.lonlat,
+            new OpenLayers.Size(200,50),
+            evt.object.data, 
+            true);
+            map.addPopup(popup);
+        });
+    });
+
+    map.viewPortDiv.lastChild.style.bottom = '0px';
+    map.viewPortDiv.lastChild.style.background = 'rgba(255,255,255,.8)';
+    map.viewPortDiv.lastChild.innerHTML = '<a style="color:#0078a8;" href="https://github.com/Shtarev">AndreyS</a> | © <a style="color:#0078a8;" href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+}
+
+markerAdd()
+function markerAdd(variant = true) {
+    let lat = 55.918574
+    let lon = 38.005837
+    let markerIndex = 0;
+    let map = new OpenLayers.Map("markerAdd");
+    let mapnik = new OpenLayers.Layer.OSM();
+    map.addLayer(mapnik);
+    let mapFrame = map.setCenter(new OpenLayers.LonLat(lon, lat)
+        .transform(
+        new OpenLayers.Projection("EPSG:4326"),
+        new OpenLayers.Projection("EPSG:900913")
+        ), 15
+    );
+
+    let layerMarkers = new OpenLayers.Layer.Markers("Markers");
+    map.addLayer(layerMarkers);
+
+    map.events.register('click', map, function (e) {
+        if(variant && map.layers.length > 1) {
+            map.layers[1].markers.forEach((el) => {
+                el.events.element.style.display = 'none';
+            });
+            map.layers[1].markers = [];
+            console.log('all markers: ', map.layers[1].markers);
+        }
+        
+        layerMarkers.addMarker(
+            metka = new OpenLayers.Marker(utm = map.getLonLatFromViewPortPx(e.xy), new OpenLayers.Icon(punkt, size, offset))
+        );
+
+        metka.data = 'New marker with UTM coordinates- lon: ' + utm.lon + ' lat: ' + utm.lat
+        metka.markerIndex = markerIndex;
+        markerIndex = markerIndex + 1;
+
+        console.log('UTM coordinates: ', utm);
+        console.log('object of marker: ', metka);
+
+        if(!variant){
+            metka.events.register('click', metka, function(evt) {
+                evt.element.style.display = 'none';
+                delete map.layers[1].markers[evt.object.markerIndex];
+                console.log('all markers: ', map.layers[1].markers);
+            });
+        }
+    });
+    map.viewPortDiv.lastChild.style.bottom = '0px';
+    map.viewPortDiv.lastChild.style.background = 'rgba(255,255,255,.8)';
+    map.viewPortDiv.lastChild.innerHTML = '<a style="color:#0078a8;" href="https://github.com/Shtarev">AndreyS</a> | © <a style="color:#0078a8;" href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+}
+</script>
+</body>
+</html>
