@@ -4,6 +4,41 @@
 <meta charset="utf-8">
 <title>Points on the map with OpenStreetMap</title>
 <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+<style>
+.popup-wrapper {
+    padding: 1px;
+    text-align: left;
+    border-radius: 12px;
+    background: white;
+    color: #333;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+    overflow: visible !important;
+    margin-left: -117px;
+    margin-top: -108px;
+}
+.popup-tip-container {
+    position: absolute;
+    width: 40px;
+    height: 20px;
+    left: 50%;
+    margin-top: -1px;
+    margin-left: -20px;
+    overflow: hidden;
+    pointer-events: none;
+}
+.popup-tip {
+    background: white;
+    width: 17px;
+    height: 17px;
+    padding: 1px;
+    margin: -10px auto 0;
+    pointer-events: auto;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+</style>
 </head>
 <body>
 <h2>Points on the map with <a href="https://www.openstreetmap.org/" target="_blank">'OpenStreetMap'</a> API</h2>
@@ -53,6 +88,7 @@ function markerGet() {
     });
 
     layerMarkers.markers.forEach((value)=>{
+
         value.events.register('mouseover', value, function(evt) {
             if(typeof(popup) != "undefined" && popup !== null) {
                 popup.destroy();
@@ -62,7 +98,9 @@ function markerGet() {
             new OpenLayers.Size(200,50),
             evt.object.data, 
             true);
+            
             map.addPopup(popup);
+            popupPozTip();
         });
     });
 
@@ -120,6 +158,17 @@ function markerAdd(variant = true) {
     map.viewPortDiv.lastChild.style.bottom = '0px';
     map.viewPortDiv.lastChild.style.background = 'rgba(255,255,255,.8)';
     map.viewPortDiv.lastChild.innerHTML = '<a style="color:#0078a8;" href="https://github.com/Shtarev">AndreyS</a> | © <a style="color:#0078a8;" href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+}
+
+function popupPozTip() {
+    let divPopup = document.getElementById('popup');
+    divPopup.classList.add('popup-wrapper');
+    let div1 = document.createElement('div');
+    div1.className = 'popup-tip-container';
+    let div2 = document.createElement('div');
+    div2.className = 'popup-tip';
+    div1.appendChild(div2);
+    divPopup.appendChild(div1);
 }
 </script>
 </body>
