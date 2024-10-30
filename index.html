@@ -54,6 +54,9 @@ function markerGet() {
 
     layerMarkers.markers.forEach((value)=>{
         value.events.register('mouseover', value, function(evt) {
+            if(document.getElementById('popup')) {
+                document.getElementById('popup').remove();
+            }
             popup = new OpenLayers.Popup("popup",
             evt.object.lonlat,
             new OpenLayers.Size(200,50),
