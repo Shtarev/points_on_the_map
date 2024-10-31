@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Points on the map with OpenStreetMap</title>
-<script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+<script src="//openlayers.org/api/OpenLayers.js"></script>
 <style>
 .popup-wrapper {
     padding: 1px;
@@ -105,6 +105,7 @@ function markerGet() {
     });
 
     map.viewPortDiv.lastChild.style.bottom = '0px';
+    map.viewPortDiv.lastChild.style.right = '0px';
     map.viewPortDiv.lastChild.style.background = 'rgba(255,255,255,.8)';
     map.viewPortDiv.lastChild.innerHTML = '<a style="color:#0078a8;" href="https://github.com/Shtarev">AndreyS</a> | © <a style="color:#0078a8;" href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 }
@@ -156,6 +157,7 @@ function markerAdd(variant = true) {
         }
     });
     map.viewPortDiv.lastChild.style.bottom = '0px';
+    map.viewPortDiv.lastChild.style.right = '0px';
     map.viewPortDiv.lastChild.style.background = 'rgba(255,255,255,.8)';
     map.viewPortDiv.lastChild.innerHTML = '<a style="color:#0078a8;" href="https://github.com/Shtarev">AndreyS</a> | © <a style="color:#0078a8;" href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 }
