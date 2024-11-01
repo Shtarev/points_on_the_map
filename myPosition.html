@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Position on the map with OpenStreetMap</title>
+<script src="//openlayers.org/api/OpenLayers.js"></script>
+</head>
+<body>
+<h2>The current position of the client on the map with <a href="https://www.openstreetmap.org/" target="_blank">'OpenStreetMap | OpenLayers'</a> API</h2>
+<i>Easy sample for improvements | works from a domain with https:</i>
+<br>
+<h3>You position:</h3>
+<p id="location"></p>
+<div id="markerGet" style="width:800px; height:500px;"></div>
+
+<script>
+var lat = 0;
+var lon = 0;
+
+var svg = '<path d="m30 5c-9.04 0-16.4 7.35-16.4 16.39 0 15.15 15 32.53 15.64 33.27.19.21.47.34.76.34s.56-.13.75-.34c.64-.74 15.64-18.12 15.64-33.27 0-9.04-7.34-16.39-16.39-16.39zm0 25.24c-4.88 0-8.85-3.97-8.85-8.85 0-4.87 3.97-8.84 8.85-8.84s8.85 3.97 8.85 8.84c.01 4.88-3.97 8.85-8.85 8.85z"/>';
+var punkt = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">${svg}</svg>`;
+var size = new OpenLayers.Size(41, 45);
+var offset = new OpenLayers.Pixel(-(size.w / 2), -size.h);
+var scale = 15;
+
+getLocation()
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            lat = position.coords.latitude;
+            lon = position.coords.longitude;
+            document.getElementById("location").innerHTML = "lat: " + lat + "<br>lon: " + lon;
+            markerGet(lon, lat);
+        });
+    } else {
+        document.getElementById("location").innerHTML = "Geolocation is not supported.";
+    }
+}
+
+function markerGet(lon, lat) {
+    let map = new OpenLayers.Map("markerGet");
+    let mapnik = new OpenLayers.Layer.OSM();
+    map.addLayer(mapnik);
+    let mapFrame = map.setCenter(new OpenLayers.LonLat(lon, lat)
+        .transform(
+        new OpenLayers.Projection("EPSG:4326"),
+        new OpenLayers.Projection("EPSG:900913")
+        ), scale
+    );
+
+    let layerMarkers = new OpenLayers.Layer.Markers("Markers");
+    map.addLayer(layerMarkers);
+
+    layerMarkers.addMarker(metka =new OpenLayers.Marker(new OpenLayers.LonLat(lon, lat)
+        .transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            new OpenLayers.Projection("EPSG:900913")
+        ), new OpenLayers.Icon(punkt, size, offset)));
+
+    map.viewPortDiv.lastChild.style.bottom = '0px';
+    map.viewPortDiv.lastChild.style.right = '0px';
+    map.viewPortDiv.lastChild.style.background = 'rgba(255,255,255,.8)';
+    map.viewPortDiv.lastChild.innerHTML = '<a style="color:#0078a8;" href="https://github.com/Shtarev">AndreyS</a> | © <a style="color:#0078a8;" href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+}
+</script>
+</body>
+</html>
